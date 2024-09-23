@@ -1,10 +1,14 @@
 // src/components/Header.tsx
 import React, { useState } from 'react';
 import { FaShoppingCart, FaUser } from 'react-icons/fa'; // Using react-icons for cart and user icons
+import { useSelector } from 'react-redux';
+import { RootState } from 'src/store/store';
 
 const Header: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [dropdownVisible, setDropdownVisible] = useState(false);
+
+  const cartItems = useSelector((state: RootState) => state.cart.items);
 
   // Sample search results (you can replace this with real data)
   const results = searchTerm
@@ -69,6 +73,7 @@ const Header: React.FC = () => {
       {/* Icons Section */}
       <div className="tw-flex tw-space-x-4">
         <button className="tw-text-gray-700 hover:tw-text-blue-500">
+          {cartItems.length}
           <FaShoppingCart size={24} />
         </button>
         <button className="tw-text-gray-700 hover:tw-text-blue-500">

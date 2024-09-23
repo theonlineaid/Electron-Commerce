@@ -22,7 +22,9 @@ const windowRoutes = {
   },
   new: {
     route: '/new',
-    options: { width: 600, height: 400 },
+    options: { width: 1200, height: 600, minWidth: 800, minHeight: 400 }, // Adjust width for full-width effect
+    // options: { width: 600, height: 400 },
+    // options: { fullscreen: true },
   },
   settings: {
     route: '/settings',

@@ -4,12 +4,15 @@ import ReactDOM from 'react-dom/client';
 import App from './App'; // Import the App component
 import './index.css';
 import { ThemeProvider } from './context/ThemeContext';
+import { Helmet, HelmetProvider } from 'react-helmet-async';
 import {
   createBrowserRouter,
   Link,
   RouterProvider,
 } from "react-router-dom";
 import NewPage from './page/NewPage';
+import { Provider } from 'react-redux';
+import store from './store/store';
 
 const router = createBrowserRouter([
   {
@@ -24,6 +27,9 @@ const router = createBrowserRouter([
   {
     path: "*",
     element: <div>
+      <Helmet>
+        <title>Page not found</title>
+      </Helmet>
       <h1>Page not found</h1>
       <p>Sorry, but the page you are looking for does not exist.</p>
       <Link to="/">Go back</Link>
@@ -37,7 +43,11 @@ if (rootElement) {
   const root = ReactDOM.createRoot(rootElement);
   root.render(
     <ThemeProvider>
-      <RouterProvider router={router} />
+      <HelmetProvider>
+      <Provider store={store}>
+        <RouterProvider router={router} />
+        </Provider>
+      </HelmetProvider>
     </ThemeProvider>
   );
 } else {
