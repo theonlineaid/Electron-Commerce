@@ -1,7 +1,10 @@
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
 
-// Handle creating/removing shortcuts on Windows when installing/uninstalling.
+// Dynamically infer route keys from windowRoutes
+type RouteKeys = keyof typeof windowRoutes;
+
+// Electron Squirrel Startup handling (for Windows)
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
@@ -9,45 +12,83 @@ if (require('electron-squirrel-startup')) {
 declare const MAIN_WINDOW_VITE_DEV_SERVER_URL: string;
 declare const MAIN_WINDOW_VITE_NAME: string;
 
-const createWindow = () => {
-  // Create the browser window.
-  const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
-    minWidth: 380,  // Set minimum width
-    minHeight: 300, // Set minimum height (optional)
+let mainWindow: BrowserWindow;
+
+// Centralized configuration for routes and window options
+const windowRoutes = {
+  main: {
+    route: '/',
+    options: { width: 800, height: 600, minWidth: 380, minHeight: 300 },
+  },
+  new: {
+    route: '/new',
+    options: { width: 600, height: 400 },
+  },
+  settings: {
+    route: '/settings',
+    options: { width: 500, height: 300 },
+  },
+  // Add more routes/windows here
+};
+
+// Create a reusable window creation function
+const createWindow = (route: string, options: Electron.BrowserWindowConstructorOptions) => {
+  const newWindow = new BrowserWindow({
+    ...options,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-      nodeIntegration: true,  // Enable node integration if needed
-      contextIsolation: false // Disable context isolation if you want to access Node.js APIs directly
+      preload: path.join(__dirname, 'preload.js'), // Preload script for node access
+      nodeIntegration: true,
+      contextIsolation: false,
     },
   });
 
-  // In development, load the Vite dev server URL. In production, load the production build.
+  // Load the proper route in development or production
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    mainWindow.loadURL(MAIN_WINDOW_VITE_DEV_SERVER_URL); // Loaded from Vite server
+    newWindow.loadURL(`${MAIN_WINDOW_VITE_DEV_SERVER_URL}${route}`); // Load the route in dev
   } else {
-    mainWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`)); // Loaded from production build
+    newWindow.loadFile(path.join(__dirname, `../renderer/${MAIN_WINDOW_VITE_NAME}/index.html`));
+    newWindow.webContents.executeJavaScript(`
+      window.history.pushState({}, '', '${route}');
+    `); // Navigate to the specified route in production
   }
 
-  // Optionally open DevTools in development mode
+  // Open DevTools if in development
   if (MAIN_WINDOW_VITE_DEV_SERVER_URL) {
-    mainWindow.webContents.openDevTools();
+    newWindow.webContents.openDevTools();
   }
+
+  return newWindow;
 };
 
-// Create window when Electron has finished initialization.
-app.whenReady().then(createWindow);
 
-// Quit the application when all windows are closed, except on macOS.
+// Listen for the event to open a new window dynamically
+ipcMain.on('open-new-window', (event, route: RouteKeys) => {
+  const windowConfig = windowRoutes[route];
+
+  if (windowConfig) {
+    createWindow(windowConfig.route, windowConfig.options);
+  } else {
+    console.error(`No configuration found for route: ${route}`);
+  }
+});
+
+// App ready event to create the main window
+app.whenReady().then(() => {
+  const mainConfig = windowRoutes.main;
+  mainWindow = createWindow(mainConfig.route, mainConfig.options);
+});
+
+// Quit when all windows are closed, except on macOS
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
     app.quit();
   }
 });
 
+// Reopen the main window on macOS when the dock icon is clicked
 app.on('activate', () => {
   if (BrowserWindow.getAllWindows().length === 0) {
-    createWindow();
+    const mainConfig = windowRoutes.main;
+    mainWindow = createWindow(mainConfig.route, mainConfig.options);
   }
 });

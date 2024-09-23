@@ -1,10 +1,8 @@
-// src/App.tsx
 import React from 'react';
-import Header from './components/Header'; // Import the new Header component
-import Footer from './components/Footer'; // Import the new Footer component
+import Header from './components/Header'; 
+import Footer from './components/Footer';
 import { useTheme } from './context/ThemeContext';
-// import MoodWithIconSwitch from './components/theme/MoodWithIconSwitcher';
-// import ThemeSwitcher from './components/theme/ThemeSwitcher';
+const { ipcRenderer } = window.require('electron');
 
 const App = () => {
   const { theme } = useTheme();
@@ -17,14 +15,27 @@ const App = () => {
     system: window.matchMedia('(prefers-color-scheme: dark)').matches ? 'tw-bg-dark-500 tw-text-white' : 'tw-bg-light-50 tw-text-light-500'
   }[theme] || 'tw-bg-light-50 tw-text-light-500'; // Default to light theme
 
+  // Function to open a new window with the 'new' route
+  const openNewWindow = (route: 'new' | 'settings') => {
+    ipcRenderer.send('open-new-window', route); // Pass the route as a second argument
+  };
+
   return (
     <div className={` ${themeClass}`}>
-      {/* <MoodWithIconSwitch /> */}
-      {/* <ThemeSwitcher /> */}
       <Header />
       <main>
         <h2>💖 This is the main content!</h2>
         <p>Electron and React are now working together!</p>
+
+        {/* Updated button to open the 'new' window */}
+        <button onClick={() => openNewWindow('new')} className="tw-bg-blue-500 tw-text-white tw-p-2 tw-rounded">
+          Open New Window
+        </button>
+
+        {/* You can add more buttons to trigger different routes if needed */}
+        <button onClick={() => openNewWindow('settings')} className="tw-bg-green-500 tw-text-white tw-p-2 tw-rounded tw-ml-2">
+          Open Settings Window
+        </button>
       </main>
 
       <h1 className="tw-text-3xl tw-font-bold tw-underline">
@@ -36,4 +47,3 @@ const App = () => {
 };
 
 export default App;
-
