@@ -1,9 +1,11 @@
 import React, { useEffect } from 'react';
-import { fetchSingleProduct } from 'src/store/FetchHelper';
-import { useAppDispatch, useAppSelector } from 'src/store/store';
+import { useParams } from 'react-router-dom';
+import { fetchSingleProduct } from '../store/FetchHelper';
+import { useAppDispatch, useAppSelector } from '../store/store';
 
 
-const SingleProduct: React.FC<{ productId: number }> = ({ productId }) => {
+const SingleProduct: React.FC = () => {
+    const { productId } = useParams<{ productId: any }>();
     const dispatch = useAppDispatch();
     const singleProduct = useAppSelector(state => state.products.singleProduct);
     const loading = useAppSelector(state => state.products.loading);

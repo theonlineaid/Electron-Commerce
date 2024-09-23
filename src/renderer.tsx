@@ -13,6 +13,7 @@ import {
 import NewPage from './page/NewPage';
 import { Provider } from 'react-redux';
 import store from './store/store';
+import SingleProduct from './page/SingleProduct';
 
 const router = createBrowserRouter([
   {
@@ -22,6 +23,15 @@ const router = createBrowserRouter([
   {
     path: "/new",
     element: <NewPage />,
+  },
+  {
+    path: `/product/:productId`,
+    element: <SingleProduct />,
+  },
+
+  {
+    path: "/cart",
+    element: <h1>Cart</h1>,
   },
 
   {

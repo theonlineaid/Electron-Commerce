@@ -31,6 +31,10 @@ const windowRoutes = {
     options: { width: 500, height: 300 },
   },
   // Add more routes/windows here
+  product: {
+    // This is just a placeholder; we'll use dynamic routing
+    options: { width: 800, height: 600 },
+  },
 };
 
 // Create a reusable window creation function
@@ -65,13 +69,18 @@ const createWindow = (route: string, options: Electron.BrowserWindowConstructorO
 
 // Listen for the event to open a new window dynamically
 ipcMain.on('open-new-window', (event, route: RouteKeys) => {
-  const windowConfig = windowRoutes[route];
+  const windowConfig = windowRoutes[route] as any;
 
   if (windowConfig) {
     createWindow(windowConfig.route, windowConfig.options);
   } else {
     console.error(`No configuration found for route: ${route}`);
   }
+});
+
+ipcMain.on('open-product-details', (event, productId: number) => {
+  const route = `/product/${productId}`;
+  createWindow(route, windowRoutes.product.options);
 });
 
 // App ready event to create the main window

@@ -1,7 +1,10 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { addToCart } from '../store/cartSlice';
 import { useAppDispatch, useAppSelector } from '../store/store';
 import { fetchProducts } from '../store/FetchHelper';
+import ProductModal from './ProductModal';
+// import { ipcRenderer } from 'electron';
+const { ipcRenderer } = window.require('electron');
 
 export interface Product {
     id: number;
@@ -20,6 +23,7 @@ const ProductList: React.FC = () => {
     const dispatch = useAppDispatch();
     const products = useAppSelector(state => state.products.items);
     const loading = useAppSelector(state => state.products.loading);
+    // const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
     useEffect(() => {
         dispatch(fetchProducts());
@@ -33,10 +37,23 @@ const ProductList: React.FC = () => {
         dispatch(addToCart(product));
     };
 
+    // const openModal = (product: Product) => {
+    //     setSelectedProduct(product);
+    // };
+
+    // const closeModal = () => {
+    //     setSelectedProduct(null);
+    // };
+
+
+    // Call this function when you want to open the product details
+    const handleQuickView = (productId: any) => {
+        ipcRenderer.send('open-product-details', productId);
+    };
+
     return (
         <div className="tw-container tw-mx-auto tw-p-2">
             <h2 className="tw-text-2xl tw-font-bold tw-text-center tw-mb-6">Products</h2>
-
             <div className="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 lg:tw-grid-cols-3 tw-gap-4">
                 {products.map(product => (
                     <div key={product.id} className="tw-bg-white tw-shadow-lg tw-rounded-lg tw-overflow-hidden">
@@ -51,11 +68,20 @@ const ProductList: React.FC = () => {
                             >
                                 Add to Cart
                             </button>
+                            <button
+                                onClick={() => handleQuickView(product.id)}
+                                className="tw-bg-green-500 tw-text-white tw-py-2 tw-px-4 tw-rounded hover:tw:bg-green-600 tw-ml-2"
+                            >
+                                Quick View
+                            </button>
                         </div>
                     </div>
                 ))}
             </div>
 
+            {/* {selectedProduct && (
+                <ProductModal product={selectedProduct} onClose={closeModal} />
+            )} */}
         </div>
     );
 };
