@@ -3,8 +3,8 @@ import React from 'react';
 import Header from './components/Header'; // Import the new Header component
 import Footer from './components/Footer'; // Import the new Footer component
 import { useTheme } from './context/ThemeContext';
-import MoodWithIconSwitch from './components/theme/MoodWithIconSwitcher';
-import ThemeSwitcher from './components/theme/ThemeSwitcher';
+// import MoodWithIconSwitch from './components/theme/MoodWithIconSwitcher';
+// import ThemeSwitcher from './components/theme/ThemeSwitcher';
 
 const App = () => {
   const { theme } = useTheme();
@@ -19,8 +19,8 @@ const App = () => {
 
   return (
     <div className={` ${themeClass}`}>
-      <MoodWithIconSwitch />
-      <ThemeSwitcher />
+      {/* <MoodWithIconSwitch /> */}
+      {/* <ThemeSwitcher /> */}
       <Header />
       <main>
         <h2>💖 This is the main content!</h2>
