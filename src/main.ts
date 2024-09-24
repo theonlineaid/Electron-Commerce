@@ -22,19 +22,16 @@ const windowRoutes = {
   },
   new: {
     route: '/new',
-    options: { width: 1200, height: 600, minWidth: 800, minHeight: 400 }, // Adjust width for full-width effect
-    // options: { width: 600, height: 400 },
-    // options: { fullscreen: true },
+    options: { width: 1200, height: 600, minWidth: 800, minHeight: 400 },
   },
   settings: {
     route: '/settings',
     options: { width: 500, height: 300 },
   },
-  // Add more routes/windows here
   product: {
-    // This is just a placeholder; we'll use dynamic routing
     options: { width: 800, height: 600 },
   },
+  // cart: { route: '/cart', options: { width: 800, height: 600 } },
 };
 
 // Create a reusable window creation function
@@ -66,7 +63,6 @@ const createWindow = (route: string, options: Electron.BrowserWindowConstructorO
   return newWindow;
 };
 
-
 // Listen for the event to open a new window dynamically
 ipcMain.on('open-new-window', (event, route: RouteKeys) => {
   const windowConfig = windowRoutes[route] as any;
@@ -78,10 +74,12 @@ ipcMain.on('open-new-window', (event, route: RouteKeys) => {
   }
 });
 
+// Handle opening the product details window
 ipcMain.on('open-product-details', (event, productId: number) => {
   const route = `/product/${productId}`;
   createWindow(route, windowRoutes.product.options);
 });
+
 
 // App ready event to create the main window
 app.whenReady().then(() => {

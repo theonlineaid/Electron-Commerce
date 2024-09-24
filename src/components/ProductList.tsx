@@ -1,9 +1,8 @@
+// src/component/ProductList.tsx
 import React, { useEffect, useState } from 'react';
 import { addToCart } from '../store/cartSlice';
 import { useAppDispatch, useAppSelector } from '../store/store';
 import { fetchProducts } from '../store/FetchHelper';
-import ProductModal from './ProductModal';
-// import { ipcRenderer } from 'electron';
 const { ipcRenderer } = window.require('electron');
 
 export interface Product {
@@ -33,20 +32,11 @@ const ProductList: React.FC = () => {
         return <p>Loading products...</p>;
     }
 
-    const handleAddToCart = (product: Product) => {
+    const handleAddToCart = (product: any) => {
         dispatch(addToCart(product));
+        console.log(dispatch(addToCart(product)))
     };
 
-    // const openModal = (product: Product) => {
-    //     setSelectedProduct(product);
-    // };
-
-    // const closeModal = () => {
-    //     setSelectedProduct(null);
-    // };
-
-
-    // Call this function when you want to open the product details
     const handleQuickView = (productId: any) => {
         ipcRenderer.send('open-product-details', productId);
     };
@@ -78,10 +68,6 @@ const ProductList: React.FC = () => {
                     </div>
                 ))}
             </div>
-
-            {/* {selectedProduct && (
-                <ProductModal product={selectedProduct} onClose={closeModal} />
-            )} */}
         </div>
     );
 };
