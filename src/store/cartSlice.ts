@@ -1,17 +1,16 @@
-// src/store/cartSlice.ts
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
 // Define the CartItem type
 export interface CartItem {
-    id: string; // Unique identifier for the item
-    title: string; // Title of the item
-    price: number; // Price of the item
-    quantity: number; // Quantity of the item in the cart
-    image: string; // Image URL of the item
+    id: string;
+    title: string;
+    price: number;
+    quantity: number;
+    image: string;
 }
 
 interface CartState {
-    items: CartItem[]; // Use the CartItem type
+    items: CartItem[];
 }
 
 const initialState: CartState = {
@@ -24,10 +23,18 @@ const cartSlice = createSlice({
     reducers: {
         addToCart: (state, action: PayloadAction<CartItem>) => {
             const existingItem = state.items.find(item => item.id === action.payload.id);
+        
+            // Ensure the payload quantity is a positive number, and default to 1 if not provided
+            const payloadQuantity = action.payload.quantity && action.payload.quantity > 0 
+                ? action.payload.quantity 
+                : 1;
+        
             if (existingItem) {
-                existingItem.quantity += action.payload.quantity;
+                // If the item exists, only increment its quantity by the payload quantity
+                existingItem.quantity += payloadQuantity;
             } else {
-                state.items.push(action.payload);
+                // If the item is new, ensure the quantity is set properly
+                state.items.push({ ...action.payload, quantity: payloadQuantity });
             }
         },
         removeItem: (state, action: PayloadAction<string>) => {
@@ -36,8 +43,20 @@ const cartSlice = createSlice({
         clearCart: (state) => {
             state.items = [];
         },
+        incrementQuantity: (state, action: PayloadAction<string>) => {
+            const existingItem = state.items.find(item => item.id === action.payload);
+            if (existingItem) {
+                existingItem.quantity += 1; // Increment the quantity
+            }
+        },
+        decrementQuantity: (state, action: PayloadAction<string>) => {
+            const existingItem = state.items.find(item => item.id === action.payload);
+            if (existingItem && existingItem.quantity > 1) {
+                existingItem.quantity -= 1; // Decrement the quantity if it's greater than 1
+            }
+        },
     },
 });
 
-export const { addToCart, removeItem, clearCart } = cartSlice.actions;
+export const { addToCart, removeItem, clearCart, incrementQuantity, decrementQuantity } = cartSlice.actions;
 export default cartSlice.reducer;

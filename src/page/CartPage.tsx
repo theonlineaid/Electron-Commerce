@@ -1,7 +1,7 @@
 // src/pages/CartPage.tsx
 import React from 'react';
 import { useAppSelector, useAppDispatch } from '../store/store';
-import { removeItem } from '../store/cartSlice';
+import { removeItem, incrementQuantity, decrementQuantity } from '../store/cartSlice';
 import { Link } from 'react-router-dom';
 import Header from '../components/Header';
 import { Helmet } from 'react-helmet-async';
@@ -13,6 +13,21 @@ const CartPage: React.FC = () => {
     // Handle removing an item from the cart
     const handleRemoveItem = (id: string) => {
         dispatch(removeItem(id)); // Dispatch action to remove item from Redux store
+    };
+
+    // Handle incrementing the quantity of an item
+    const handleIncrement = (id: string) => {
+        dispatch(incrementQuantity(id)); // Dispatch action to increment quantity
+    };
+
+    // Handle decrementing the quantity of an item
+    const handleDecrement = (id: string) => {
+        dispatch(decrementQuantity(id)); // Dispatch action to decrement quantity
+    };
+
+    // Calculate total price of items in the cart
+    const calculateTotalPrice = () => {
+        return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
     };
 
     // Render when cart is empty
@@ -30,7 +45,13 @@ const CartPage: React.FC = () => {
     const renderCartItems = () => (
         <div className="tw-grid tw-grid-cols-1 sm:tw-grid-cols-2 lg:tw-grid-cols-3 tw-gap-4">
             {cartItems.map((item) => (
-                <CartItem key={item.id} item={item} onRemove={handleRemoveItem} />
+                <CartItem 
+                    key={item.id} 
+                    item={item} 
+                    onRemove={handleRemoveItem} 
+                    onIncrement={handleIncrement} 
+                    onDecrement={handleDecrement} 
+                />
             ))}
         </div>
     );
@@ -42,6 +63,9 @@ const CartPage: React.FC = () => {
             </Helmet>
             <Header />
             {cartItems.length === 0 ? renderEmptyCart() : renderCartItems()}
+            <div className="tw-mt-4 tw-text-lg tw-font-bold">
+                Total Price: ${calculateTotalPrice().toFixed(2)}
+            </div>
         </div>
     );
 };
@@ -56,18 +80,34 @@ interface CartItemProps {
         quantity: number;
     };
     onRemove: (id: string) => void;
+    onIncrement: (id: string) => void; // New prop for increment
+    onDecrement: (id: string) => void; // New prop for decrement
 }
 
-const CartItem: React.FC<CartItemProps> = ({ item, onRemove }) => (
+const CartItem: React.FC<CartItemProps> = ({ item, onRemove, onIncrement, onDecrement }) => (
     <div className="tw-bg-white tw-shadow-lg tw-rounded-lg tw-overflow-hidden">
         <img src={item.image} alt={item.title} className="tw-w-full tw-h-36 tw-object-contain" />
         <div className="tw-p-4">
             <h3 className="tw-text-lg tw-font-semibold tw-mb-2 tw-text-gray-700">{item.title}</h3>
             <p className="tw-text-gray-700 tw-mb-4">${item.price.toFixed(2)}</p>
             <p className="tw-text-gray-700">Quantity: {item.quantity}</p>
+            <div className="tw-flex tw-space-x-2 tw-mt-2">
+                <button
+                    onClick={() => onDecrement(item.id)} // Decrement quantity
+                    className="tw-bg-gray-300 tw-text-black tw-py-1 tw-px-3 tw-rounded hover:tw:bg-gray-400"
+                >
+                    -
+                </button>
+                <button
+                    onClick={() => onIncrement(item.id)} // Increment quantity
+                    className="tw-bg-gray-300 tw-text-black tw-py-1 tw-px-3 tw-rounded hover:tw:bg-gray-400"
+                >
+                    +
+                </button>
+            </div>
             <button
                 onClick={() => onRemove(item.id)}
-                className="tw-bg-red-500 tw-text-white tw-py-2 tw-px-4 tw-rounded hover:tw-bg-red-600 tw-mt-4"
+                className="tw-bg-red-500 tw-text-white tw-py-2 tw-px-4 tw-rounded hover:tw:bg-red-600 tw-mt-4"
             >
                 Remove from Cart
             </button>

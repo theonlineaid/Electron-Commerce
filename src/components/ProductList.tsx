@@ -34,7 +34,7 @@ const ProductList: React.FC = () => {
 
     const handleAddToCart = (product: any) => {
         dispatch(addToCart(product));
-        console.log(dispatch(addToCart(product)))
+        // console.log(dispatch(addToCart(product)))
     };
 
     const handleQuickView = (productId: any) => {
