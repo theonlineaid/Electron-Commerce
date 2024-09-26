@@ -21,6 +21,7 @@ const ResetPasswordPage = React.lazy(() => import("./page/ResetPasswordPage"));
 const NewPage = React.lazy(() => import("./page/NewPage"));
 const SingleProduct = React.lazy(() => import("./page/SingleProduct"));
 const CartPage = React.lazy(() => import("./page/CartPage"));
+const CheckoutPage = React.lazy(() => import("./page/CheckoutPage"));
 
 interface ErrorBoundaryProps {
   children: React.ReactNode;
@@ -128,6 +129,15 @@ const router = createBrowserRouter([
     element: (
       <React.Suspense fallback={<div>Loading...</div>}>
         <CartPage />
+      </React.Suspense>
+    ),
+  },
+
+  {
+    path: "/checkout",
+    element: (
+      <React.Suspense fallback={<div>Loading...</div>}>
+        <CheckoutPage />
       </React.Suspense>
     ),
   },

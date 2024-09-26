@@ -3,6 +3,7 @@ import { FaShoppingCart, FaUser } from "react-icons/fa"; // Using react-icons fo
 import { RootState, useAppSelector } from "../store/store";
 import SearchDropdown from "./SearchDropdown";
 import useRoute from "../hook/useRouter";
+import { Link } from "react-router-dom";
 
 const Header: React.FC = () => {
   const cartItems = useAppSelector((state: RootState) => state.cart.items);
@@ -12,11 +13,13 @@ const Header: React.FC = () => {
     <header className="tw-bg-light-50 tw-p-4 tw-flex tw-justify-between tw-items-center tw-shadow">
       {/* Logo Section */}
       <div className="tw-flex tw-items-center">
-        <img
-          src="https://i.ibb.co/DpK6Z0m/1673291260756.png"
-          alt="Logo"
-          className="tw-h-10 tw-w-auto"
-        />
+        <Link to={"/"}>
+          <img
+            src="https://i.ibb.co/DpK6Z0m/1673291260756.png"
+            alt="Logo"
+            className="tw-h-10 tw-w-auto"
+          />
+        </Link>
       </div>
 
       <SearchDropdown />
